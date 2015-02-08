@@ -1,0 +1,30 @@
+﻿<Window x:Class="Winika.Gui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Activate Winika" Height="175" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Style="{StaticResource WinikaWindowsStyle}">
+    <Grid Margin="5" VerticalAlignment="Center">
+        <StackPanel Orientation="Vertical">
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center">To use Winika, you need to activate your copy. Please register your unique ID on the following website. This is tied to your computer and cannot be used on other machines.
+                <Hyperlink NavigateUri="http://winika.nxu.hu">
+                    http://winika.nxu.hu
+                </Hyperlink>
+            </TextBlock>
+            <Grid Margin="0 10 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition> 
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0">Your unique ID</TextBlock>
+                <TextBox Margin="10 0 0 10" Grid.Row="0" Grid.Column="1" Style="{StaticResource WinikaTextboxStyle}" IsReadOnly="True" x:Name="GuidTextBox">Loading unique ID...</TextBox>
+                
+                <Button Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource WinikaButtonStyle}" Click="Continue_OnClick">I've registered. Continue</Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
