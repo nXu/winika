@@ -6,7 +6,7 @@
     <Grid Margin="10" VerticalAlignment="Center">
         <StackPanel Orientation="Vertical">
             <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Justify" Margin="0 0 0 10">
-                Please login using your username and password. Your credentials are sent directly to the official servers and not stored anywhere else other than your own computer.
+                Please login using your username and password. Your credentials are sent directly to the official servers and are not stored anywhere else other than your own computer.
             </TextBlock>
             <Grid>
                 <Grid.RowDefinitions>
@@ -29,7 +29,7 @@
                 <TextBlock Grid.Row="2">Server</TextBlock>
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="ServerTextBox" Style="{StaticResource WinikaTextboxStyle}" Margin="10 0 0 10" ToolTip="Use the server name and region (ex: s1-us)"></TextBox>
                 
-                <Button Style="{StaticResource WinikaButtonStyle}" Grid.Row="3" Grid.ColumnSpan="2">
+                <Button Style="{StaticResource WinikaButtonStyle}" Grid.Row="3" Grid.ColumnSpan="2" Click="Login_OnClick">
                     Login
                 </Button>
             </Grid>

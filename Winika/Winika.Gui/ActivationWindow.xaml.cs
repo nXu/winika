@@ -19,19 +19,19 @@
             this.Continue_OnClick(null, null);
         }
 
-        private void Continue_OnClick(object sender, RoutedEventArgs e)
+        private async void Continue_OnClick(object sender, RoutedEventArgs e)
         {
             // Get GUID again
             var guid = (new ActivationManager()).GetMachineGuid();
 
             // Get ikariam base URI
             var requestManager = new HttpRequestManager();
-            var uri = string.Format("http://winika.nxu.hu/client-auth/{0}", guid.ToUpper());
+            var uri = string.Format("https://winika.nxu.hu/client-auth/{0}", guid.ToUpper());
 
             string response;
             try
             {
-                response = requestManager.Get(uri);
+                response = await requestManager.Get(uri);
             }
             catch (Exception ex)
             {
@@ -50,7 +50,8 @@
 
             // Save base URI and continue
             var baseuri = (string)data["data"]["baseuri"];
-            var loginWindow = new LoginWindow(baseuri);
+            var useragent = (string) data["data"]["useragent"];
+            var loginWindow = new LoginWindow(baseuri, useragent);
             loginWindow.Show();
             this.Close();
         }

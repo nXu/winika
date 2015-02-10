@@ -1,8 +1,9 @@
 ﻿namespace Winika.Lib.HttpCommunication
 {
-    using System;
-    using System.IO;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using System.Net;
+    using System.Net.Http;
 
     /// <summary>
     /// Manager class for HTTP communication.
@@ -17,7 +18,7 @@
         /// <summary>
         /// Cookies to send / receive in the request.
         /// </summary>
-        private Cookie[] _cookies;
+        private readonly CookieContainer _cookies;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpRequestManager"/> class.
@@ -26,27 +27,7 @@
         {
             var version = VersionTools.VersionReader.GetVersion();
             this._userAgent = string.Format("nxu-winika-v{0}.{1}.{2}", version.Major, version.Minor, version.Build);
-            this._cookies = null;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRequestManager"/> class.
-        /// </summary>
-        /// <param name="cookies">Cookies to be used in the requests.</param>
-        public HttpRequestManager(Cookie[] cookies) : this()
-        {
-            this._cookies = cookies;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HttpRequestManager"/> class.
-        /// </summary>
-        /// <param name="cookies">Cookies to be used in the requests.</param>
-        /// <param name="userAgent">User agent to be used in the requests.</param>
-        public HttpRequestManager(Cookie[] cookies, string userAgent)
-        {
-            this._cookies = cookies;
-            this._userAgent = userAgent;
+            this._cookies = new CookieContainer();
         }
 
         /// <summary>
@@ -55,7 +36,7 @@
         /// <param name="userAgent">User agent to be used in the requests.</param>
         public HttpRequestManager(string userAgent)
         {
-            this._cookies = null;
+            this._cookies = new CookieContainer();
             this._userAgent = userAgent;
         }
 
@@ -64,50 +45,48 @@
         /// </summary>
         /// <param name="uri">Request URI.</param>
         /// <returns>Response body.</returns>
-        public string Get(string uri)
+        public async Task<string> Get(string uri)
         {
-            var req = (HttpWebRequest)WebRequest.Create(uri);
-            req.Method = WebRequestMethods.Http.Get;
-            req.CookieContainer = this.GetCookieContainer();
-            req.UserAgent = this._userAgent;
+            // Set cookies
+            var handler = new HttpClientHandler();
+            handler.CookieContainer = this._cookies;
 
-            try
-            {
-                using (var resp = (HttpWebResponse)req.GetResponse())
-                {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    using (var reader = new StreamReader(resp.GetResponseStream()))
-                    {
-                        return reader.ReadToEnd();
-                    }
-                }
-            }
-            catch
-            {
-                throw new Exception("Network communication error.");
-            }
+            // Create HTTP client
+            var client = new HttpClient(handler);
 
+            // Set user agent
+            client.DefaultRequestHeaders.Add("User-Agent", this._userAgent);
+
+            // Send request
+            return await client.GetStringAsync(uri);
         }
 
         /// <summary>
-        /// Converts the cookie array to a cookie container.
+        /// Executes a POST request.
         /// </summary>
-        /// <returns>Cookies in a cookie container.</returns>
-        private CookieContainer GetCookieContainer()
+        /// <param name="uri">Request URI.</param>
+        /// <param name="requestBody">Request body.</param>
+        /// <returns>Response body.</returns>
+        public async Task<string> Post(string uri, IEnumerable<KeyValuePair<string, string>> requestBody)
         {
-            var container = new CookieContainer();
+            // Set cookies
+            var handler = new HttpClientHandler();
+            handler.CookieContainer = this._cookies;
 
-            if (this._cookies == null)
-            {
-                return container;
-            }
+            // Create HTTP client
+            var client = new HttpClient(handler);
 
-            foreach (var cookie in this._cookies)
-            {
-                container.Add(cookie);
-            }
+            // Set user agent
+            client.DefaultRequestHeaders.Add("User-Agent", this._userAgent);
 
-            return container;
+            // Set POST data
+            var content = new FormUrlEncodedContent(requestBody);
+
+            // Send request
+            var response = await client.PostAsync(uri, content);
+
+            // Get response
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }
