@@ -7,4 +7,4 @@
 You'll see soon. :)
 
 ## License
-Winika is licensed under GNU GPLv3. See LICENSE for details.
+As of now, proprietary
